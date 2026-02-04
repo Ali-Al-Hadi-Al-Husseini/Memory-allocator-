@@ -10,13 +10,16 @@ typedef struct
 {
     void *start;
     size_t size;
-}mem_chunk;
+}memory_chunk;
 
 
 
 char heap[MEM_CAPACITY] = {0};
 size_t alloced_size = 0;
 
+
+memory_chunk mem_chunks [AllOCED_CAPCITY] = {0}; 
+size_t mem_chunks_size = 0;
 
 
 
