@@ -3,17 +3,28 @@
 #include <stdbool.h>
 
 
-#define CAPACITY 640000
+#define MEM_CAPACITY 640000
+#define AllOCED_CAPCITY 2048
 
-char heap[CAPACITY] = {0};
-size_t used_size = 0;
+typedef struct  
+{
+    void *start;
+    size_t size;
+}mem_chunk;
+
+
+
+char heap[MEM_CAPACITY] = {0};
+size_t alloced_size = 0;
+
+
 
 
 void *heap_allocate(size_t size){
 
-    assert( used_size + size <= CAPACITY);
-    void *result = heap + used_size;
-    used_size += size ;
+    assert( alloced_size + size <= MEM_CAPACITY);
+    void *result = heap + alloced_size;
+    alloced_size += size ;
 
     return result;
 }
