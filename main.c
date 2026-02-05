@@ -4,7 +4,7 @@
 
 
 #define MEM_CAPACITY 640000
-#define AllOCED_CAPCITY 2048
+#define CHUNKS_CAPACITY 2048
 
 typedef struct  
 {
@@ -17,8 +17,7 @@ typedef struct
 char heap[MEM_CAPACITY] = {0};
 size_t alloced_size = 0;
 
-
-memory_chunk mem_chunks [AllOCED_CAPCITY] = {0}; 
+memory_chunk mem_chunks [CHUNKS_CAPACITY] = {0}; 
 size_t mem_chunks_size = 0;
 
 
@@ -28,6 +27,13 @@ void *heap_allocate(size_t size){
     assert( alloced_size + size <= MEM_CAPACITY);
     void *result = heap + alloced_size;
     alloced_size += size ;
+
+    const memory_chunk chunk = {
+        .start = result,
+        .size = size,
+    };
+
+    assert(mem_chunks_size <= CHUNKS_CAPACITY);
 
     return result;
 }
