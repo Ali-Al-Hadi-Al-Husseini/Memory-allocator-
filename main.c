@@ -33,7 +33,9 @@ void *heap_allocate(size_t size){
         .size = size,
     };
 
-    assert(mem_chunks_size <= CHUNKS_CAPACITY);
+    assert(mem_chunks_size < CHUNKS_CAPACITY);
+    mem_chunks[mem_chunks_size++] = chunk;
+
 
     return result;
 }
