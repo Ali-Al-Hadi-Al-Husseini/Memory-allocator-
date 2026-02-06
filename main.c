@@ -10,15 +10,21 @@ typedef struct
 {
     void *start;
     size_t size;
+
 }memory_chunk;
 
+typedef struct{
+    
+    size_t size;
+    memory_chunk chunks[CHUNKS_CAPACITY];
 
+}chunk_list;
 
 char heap[MEM_CAPACITY] = {0};
 size_t alloced_size = 0;
 
-memory_chunk mem_chunks [CHUNKS_CAPACITY] = {0}; 
-size_t mem_chunks_size = 0;
+chunk_list mem_chunks = {0}; 
+chunk_list freed_chunks = {0};
 
 
 
@@ -37,8 +43,8 @@ void *heap_allocate(size_t size){
         .size = size,
     };
 
-    assert(mem_chunks_size < CHUNKS_CAPACITY);
-    mem_chunks[mem_chunks_size++] = chunk;
+    assert(mem_chunks.size < CHUNKS_CAPACITY);
+    mem_chunks.chunks[mem_chunks.size++] = chunk;
 
 
     return result;
