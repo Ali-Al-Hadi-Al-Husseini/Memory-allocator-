@@ -24,6 +24,10 @@ size_t mem_chunks_size = 0;
 
 void *heap_allocate(size_t size){
 
+    if(size <= 0){
+        return NULL;
+    }
+
     assert( alloced_size + size <= MEM_CAPACITY);
     void *result = heap + alloced_size;
     alloced_size += size ;
