@@ -31,14 +31,25 @@ int chunk_list_find( chunk_list *list, void *ptr){
 
 
 int chunk_list_insert( chunk_list *list,void *ptr , size_t size){
-    
 
     assert( list->size < CHUNKS_CAPACITY);
     
     list->chunks[list->size].start = ptr;
     list->chunks[list->size].size = size;
 
-    list->size ++;
+
+    // inseting a chunk in sorted order O(n)
+    for(int i= list->size; i > 0; i--){
+        if (list->chunks[i].start >list->chunks[i - 1 ].start){
+            break;
+        }
+        memory_chunk temp_chunk =  list->chunks[i];
+        list->chunks[i] =  list->chunks[i-1];
+        list->chunks[i-1] = temp_chunk;
+       
+    }
+
+    list->size ++ ;
 
     return 1 ;
     
@@ -69,7 +80,7 @@ void *heap_allocate(size_t size){
     if(size <= 0){
         return NULL;
     }
-
+    // checking to see if there is enough space left 
     assert( alloced_size + size <= MEM_CAPACITY);
     void *result = heap + alloced_size;
     alloced_size += size ;
