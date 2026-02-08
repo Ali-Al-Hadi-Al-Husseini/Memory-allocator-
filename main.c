@@ -20,6 +20,36 @@ typedef struct{
 
 }chunk_list;
 
+
+int chunk_list_find(const chunk_list *list, void *ptr){
+    (void)  list;
+    (void) ptr;
+ 
+    assert(false && "chunk_list_find not implemented yet ");
+
+}
+
+
+int chunk_list_insert(const chunk_list *list, size_t size){
+    (void)  list;
+    (void) size;
+ 
+    assert(false && "chunk_list_insert not implemented yet ");
+    
+}
+
+int chunk_list_remove(const chunk_list *list, size_t index){
+    (void)  list;
+    (void) index;
+ 
+    assert(false && "chunk_list_remove not implemented yet ");
+    
+}
+
+
+
+
+
 char heap[MEM_CAPACITY] = {0};
 size_t alloced_size = 0;
 
@@ -52,9 +82,9 @@ void *heap_allocate(size_t size){
 
 void heap_free(void *ptr){
     (void) ptr;
-    
+    assert(false && "heap_free not implemented yet ");
 }
-
+//
 
 int main(void)
 {
