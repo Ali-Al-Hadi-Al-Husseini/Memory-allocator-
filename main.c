@@ -32,10 +32,15 @@ int chunk_list_find( chunk_list *list, void *ptr){
 
 int chunk_list_insert( chunk_list *list,void *ptr , size_t size){
     
-    (void)  list;
-    (void) size;
- 
-    assert(false && "chunk_list_insert not implemented yet ");
+
+    assert( list->size < CHUNKS_CAPACITY);
+    
+    list->chunks[list->size].start = ptr;
+    list->chunks[list->size].size = size;
+
+    list->size ++;
+
+    return 1 ;
     
 }
 
