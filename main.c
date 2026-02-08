@@ -21,7 +21,7 @@ typedef struct{
 }chunk_list;
 
 
-int chunk_list_find(const chunk_list *list, void *ptr){
+int chunk_list_find( chunk_list *list, void *ptr){
     (void)  list;
     (void) ptr;
  
@@ -30,7 +30,8 @@ int chunk_list_find(const chunk_list *list, void *ptr){
 }
 
 
-int chunk_list_insert(const chunk_list *list, size_t size){
+int chunk_list_insert( chunk_list *list,void *ptr , size_t size){
+    
     (void)  list;
     (void) size;
  
@@ -38,7 +39,7 @@ int chunk_list_insert(const chunk_list *list, size_t size){
     
 }
 
-int chunk_list_remove(const chunk_list *list, size_t index){
+int chunk_list_remove( chunk_list *list, size_t index){
     (void)  list;
     (void) index;
  
@@ -68,13 +69,7 @@ void *heap_allocate(size_t size){
     void *result = heap + alloced_size;
     alloced_size += size ;
 
-    const memory_chunk chunk = {
-        .start = result,
-        .size = size,
-    };
-
-    assert(mem_chunks.size < CHUNKS_CAPACITY);
-    mem_chunks.chunks[mem_chunks.size++] = chunk;
+    chunk_list_insert(&mem_chunks,result , size);
 
 
     return result;
