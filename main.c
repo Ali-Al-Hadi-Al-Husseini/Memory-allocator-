@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 
 #define MEM_CAPACITY 640000
@@ -13,6 +14,12 @@ typedef struct
 
 }memory_chunk;
 
+int chunk_compare(const void *a, const void *b){
+    const memory_chunk *chunk_a = a;
+    const memory_chunk *chunk_b = b;
+
+    return (chunk_a->start - chunk_b -> start);
+}
 typedef struct{
     
     size_t size;
@@ -22,10 +29,13 @@ typedef struct{
 
 
 int chunk_list_find( chunk_list *list, void *ptr){
-    (void)  list;
-    (void) ptr;
- 
-    assert(false && "chunk_list_find not implemented yet ");
+
+    void *result = bsearch(ptr, list->chunks,list->size, sizeof (memory_chunk), chunk_compare);
+
+    if (result == NULL){
+        return -1;
+    }
+    return 1;
 
 }
 
@@ -67,7 +77,7 @@ void chunk_list_print(chunk_list *list){
 
     for(int i = 0; i < list->size; i ++){
         
-        printf("chunk at %p ans the size of %i\n",list->chunks[i].start,list->chunks[i].size );
+        printf("chunk at %p ans the size of %ul \n",list->chunks[i].start,list->chunks[i].size );
     }
 }
 
@@ -112,12 +122,24 @@ int main(void)
     for (int i = 0;i < 26; ++i){
         mem[i] = i + 'A';
     }
-    printf("%s\n", mem);
+    // printf("%s\n", mem);
 
     for (int i = 27;i < 50; ++i){
-        char *mem= heap_allocate(i);
+        mem= heap_allocate(i);
     }
-    chunk_list_print(&mem_chunks);
-    
+    // chunk_list_print(&mem_chunks);
+    // printf("i want to find %p \n",&mem_chunks.chunks[0]);
+
+    // 
+    int x = 1 ;
+    memory_chunk  test  ;
+    test.size = 32;
+    test.start = &x;
+
+
+    int res1 = chunk_list_find(&mem_chunks, &test);
+    int res2 = chunk_list_find(&mem_chunks, &mem_chunks.chunks[0]);
+    printf(" res1: %i \n res2: %i\n",res1,res2);
+   
     return 0 ; 
 }
