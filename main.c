@@ -112,8 +112,11 @@ int main(void)
     for (int i = 0;i < 26; ++i){
         mem[i] = i + 'A';
     }
-
     printf("%s\n", mem);
+
+    for (int i = 27;i < 50; ++i){
+        char *mem= heap_allocate(i);
+    }
     chunk_list_print(&mem_chunks);
     
     return 0 ; 
