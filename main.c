@@ -63,6 +63,13 @@ int chunk_list_remove( chunk_list *list, size_t index){
     
 }
 
+void chunk_list_print(chunk_list *list){
+
+    for(int i = 0; i < list->size; i ++){
+        
+        printf("chunk at %p ans the size of %i\n",list->chunks[i].start,list->chunks[i].size );
+    }
+}
 
 
 
@@ -106,6 +113,8 @@ int main(void)
         mem[i] = i + 'A';
     }
 
-    printf("%s", mem);
+    printf("%s\n", mem);
+    chunk_list_print(&mem_chunks);
+    
     return 0 ; 
 }
