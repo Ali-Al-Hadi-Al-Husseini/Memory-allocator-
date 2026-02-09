@@ -20,6 +20,7 @@ int chunk_compare(const void *a, const void *b){
 
     return (chunk_a->start - chunk_b -> start);
 }
+
 typedef struct{
     
     size_t size;
@@ -29,13 +30,18 @@ typedef struct{
 
 
 int chunk_list_find( chunk_list *list, void *ptr){
-
-    void *result = bsearch(ptr, list->chunks,list->size, sizeof (memory_chunk), chunk_compare);
-
+    memory_chunk key = { .start = ptr};
+    memory_chunk *result = bsearch(&key, list->chunks,list->size, sizeof (memory_chunk), chunk_compare);
+    
     if (result == NULL){
         return -1;
     }
-    return 1;
+ 
+    assert(list->chunks <= result);
+
+    return ( result - list->chunks )  ;
+
+    
 
 }
 
@@ -77,7 +83,7 @@ void chunk_list_print(chunk_list *list){
 
     for(int i = 0; i < list->size; i ++){
         
-        printf("chunk at %p ans the size of %ul \n",list->chunks[i].start,list->chunks[i].size );
+        printf("index: %i chunk for %p and the size of %zu \n",i,list->chunks[i].start,list->chunks[i].size );
     }
 }
 
@@ -127,10 +133,10 @@ int main(void)
     for (int i = 27;i < 50; ++i){
         mem= heap_allocate(i);
     }
-    // chunk_list_print(&mem_chunks);
+    chunk_list_print(&mem_chunks);
     // printf("i want to find %p \n",&mem_chunks.chunks[0]);
 
-    // 
+    // a sudo chunk for testing 
     int x = 1 ;
     memory_chunk  test  ;
     test.size = 32;
@@ -138,7 +144,7 @@ int main(void)
 
 
     int res1 = chunk_list_find(&mem_chunks, &test);
-    int res2 = chunk_list_find(&mem_chunks, &mem_chunks.chunks[0]);
+    int res2 = chunk_list_find(&mem_chunks, mem_chunks.chunks[0].start);
     printf(" res1: %i \n res2: %i\n",res1,res2);
    
     return 0 ; 
