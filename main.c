@@ -38,10 +38,8 @@ int chunk_list_find( chunk_list *list, void *ptr){
     }
  
     assert(list->chunks <= result);
+    return ( result - list->chunks);
 
-    return ( result - list->chunks )  ;
-
-    
 
 }
 
@@ -114,9 +112,14 @@ void *heap_allocate(size_t size){
     return result;
 }
 
-void heap_free(void *ptr){
-    (void) ptr;
-    assert(false && "heap_free not implemented yet ");
+void heap_free(chunk_list *list ,int index ){
+    
+    assert(index < list->size);
+    for(int i = index; i < list->size; i++){
+        list->chunks[i] = list->chunks[i+1];
+    }
+    list->size -- ;
+
 }
 //
 
@@ -144,7 +147,7 @@ int main(void)
 
 
     int res1 = chunk_list_find(&mem_chunks, &test);
-    int res2 = chunk_list_find(&mem_chunks, mem_chunks.chunks[0].start);
+    int res2 = chunk_list_find(&mem_chunks, mem_chunks.chunks[10].start);
     printf(" res1: %i \n res2: %i\n",res1,res2);
    
     return 0 ; 
