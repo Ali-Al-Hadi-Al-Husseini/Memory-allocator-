@@ -114,9 +114,11 @@ void *heap_allocate(size_t size){
     return result;
 }
 
-void heap_free(chunk_list *list ,int index ){
+void heap_free(void *ptr ){
     
-
+    int index = chunk_list_find(&mem_chunks,ptr);
+    chunk_list_insert(&freed_chunks,ptr,mem_chunks.chunks[index].size);
+    chunk_list_remove(&mem_chunks,index);
 }
 //
 
@@ -146,6 +148,14 @@ int main(void)
     int res1 = chunk_list_find(&mem_chunks, &test);
     int res2 = chunk_list_find(&mem_chunks, mem_chunks.chunks[0].start);
     printf(" res1: %i \n res2: %i\n",res1,res2);
+
+    heap_free(mem_chunks.chunks[10].start);
+    printf("removing %p from memchunks \n",mem);
+    chunk_list_print(&mem_chunks);
+    printf("printing freed chunks \n");
+
+    chunk_list_print(&freed_chunks);
+
    
     return 0 ; 
 }
