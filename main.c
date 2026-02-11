@@ -15,6 +15,7 @@ typedef struct
 }memory_chunk;
 
 int chunk_compare(const void *a, const void *b){
+    
     const memory_chunk *chunk_a = a;
     const memory_chunk *chunk_b = b;
 
@@ -87,6 +88,9 @@ void chunk_list_print(chunk_list *list){
     }
 }
 
+void chunk_list_clean(){
+    
+}
 
 
 
@@ -96,7 +100,28 @@ size_t alloced_size = 0;
 chunk_list mem_chunks = {0}; 
 chunk_list freed_chunks = {0};
 
+void *check_freed_chunks(size_t size){
 
+    for(int i = 0; i < freed_chunks.size; i++){
+        if(freed_chunks.chunks[i].size >= size){
+            size_t chunk_size = freed_chunks.chunks[i].size ;
+            void *chunk_ptr = freed_chunks.chunks[i].start;
+
+            chunk_list_insert(&mem_chunks, chunk_ptr, chunk_size);
+
+            if ( chunk_size - size == 0  ){
+                chunk_list_remove(&freed_chunks,i);
+            }else{
+                //shrinking the chunk
+                freed_chunks.chunks[i].size  -= size;
+                freed_chunks.chunks[i].start += size;
+            }
+            return chunk_ptr;
+        } 
+        return NULL;
+    }
+
+}
 
 void *heap_allocate(size_t size){
 
@@ -104,14 +129,21 @@ void *heap_allocate(size_t size){
         return NULL;
     }
     // checking to see if there is enough space left 
-    assert( alloced_size + size <= MEM_CAPACITY);
-    void *result = heap + alloced_size;
-    alloced_size += size ;
+    if ( alloced_size + size <= MEM_CAPACITY){
 
-    chunk_list_insert(&mem_chunks,result , size);
+        void *result = heap + alloced_size;
+        alloced_size += size ;
+
+        chunk_list_insert(&mem_chunks,result , size);
+        return result;
+    }
+    void *result = check_freed_chunks(size);
+    if(result != NULL){
+        return result;
+    }
 
 
-    return result;
+
 }
 
 void heap_free(void *ptr ){
