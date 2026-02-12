@@ -88,9 +88,7 @@ void chunk_list_print(chunk_list *list){
     }
 }
 
-void chunk_list_clean(){
-    
-}
+
 
 
 
@@ -100,27 +98,43 @@ size_t alloced_size = 0;
 chunk_list mem_chunks = {0}; 
 chunk_list freed_chunks = {0};
 
-void *check_freed_chunks(size_t size){
+// these func checks the chunks to see if any are mergable 
+int merge_freed_chunks(void){
+    int i = 0;
 
-    for(int i = 0; i < freed_chunks.size; i++){
-        if(freed_chunks.chunks[i].size >= size){
-            size_t chunk_size = freed_chunks.chunks[i].size ;
+    while(i < freed_chunks.size - 1  ){
+        // adds the size of chunk[i] to its pointer to know if the next chunk[i+1] is right after it 
+        bool mergable = freed_chunks.chunks[i].start + freed_chunks.chunks[i].size == freed_chunks.chunks[i+1].start  ;
+        if (mergable){
+            freed_chunks.chunks[i+1].size += freed_chunks.chunks[i].size;
+            freed_chunks.chunks[i+1].start = freed_chunks.chunks[i].start;
+            chunk_list_remove(&freed_chunks,i);
+
+        }else{
+            i ++;
+        }
+    }
+    printf("gola amigo i: %i",i);
+}
+void *check_freed_chunks(size_t size) {
+    for (int i = 0; i < freed_chunks.size; i++) {
+        if (freed_chunks.chunks[i].size >= size) {
+            size_t chunk_size = freed_chunks.chunks[i].size;
             void *chunk_ptr = freed_chunks.chunks[i].start;
 
             chunk_list_insert(&mem_chunks, chunk_ptr, chunk_size);
 
-            if ( chunk_size - size == 0  ){
-                chunk_list_remove(&freed_chunks,i);
-            }else{
-                //shrinking the chunk
-                freed_chunks.chunks[i].size  -= size;
+            if (chunk_size - size == 0) {
+                chunk_list_remove(&freed_chunks, i);
+            } else {
+                // Shrinking the chunk
+                freed_chunks.chunks[i].size -= size;
                 freed_chunks.chunks[i].start += size;
             }
             return chunk_ptr;
-        } 
-        return NULL;
+        }
     }
-
+    return NULL; 
 }
 
 void *heap_allocate(size_t size){
@@ -141,6 +155,11 @@ void *heap_allocate(size_t size){
     if(result != NULL){
         return result;
     }
+
+    merge_freed_chunks();
+
+    result = check_freed_chunks(size);
+    return result;
 
 
 
@@ -167,27 +186,51 @@ int main(void)
     for (int i = 27;i < 50; ++i){
         mem= heap_allocate(i);
     }
-    chunk_list_print(&mem_chunks);
+    // chunk_list_print(&mem_chunks);
     // printf("i want to find %p \n",&mem_chunks.chunks[0]);
 
     // a sudo chunk for testing 
-    int x = 1 ;
-    memory_chunk  test  ;
-    test.size = 32;
-    test.start = &x;
+    // int x = 1 ;
+    // memory_chunk  test  ;
+    // test.size = 32;
+    // test.start = &x;
 
 
-    int res1 = chunk_list_find(&mem_chunks, &test);
-    int res2 = chunk_list_find(&mem_chunks, mem_chunks.chunks[0].start);
-    printf(" res1: %i \n res2: %i\n",res1,res2);
+    // int res1 = chunk_list_find(&mem_chunks, &test);
+    // int res2 = chunk_list_find(&mem_chunks, mem_chunks.chunks[0].start);
+    // printf(" res1: %i \n res2: %i\n",res1,res2);
 
-    heap_free(mem_chunks.chunks[10].start);
-    printf("removing %p from memchunks \n",mem);
-    chunk_list_print(&mem_chunks);
-    printf("printing freed chunks \n");
+    // heap_free(mem_chunks.chunks[10].start);
+    // printf("removing %s from memchunks \n",mem);
+    // chunk_list_print(&mem_chunks);
+    // printf("printing freed chunks \n");
+
+    // chunk_list_print(&freed_chunks);
+
+
+    //testing merge 
+    void *to_free[10];
+    for (int i = 5;i < 10; ++i){
+        to_free[i-5]=  mem_chunks.chunks[i].start;
+    }
+    for (int i = 15;i < 20; ++i){
+        to_free[i-10]=  mem_chunks.chunks[i].start;
+    }
+    for (int i = 0;i < 10; ++i){
+        heap_free(to_free[i]);
+    }
+    // chunk_list_print(&mem_chunks);
+    printf("++++++++++++++freed+++++++++++++\n");
+    printf("++++++++++++++++++++++++++++++++\n");
+
 
     chunk_list_print(&freed_chunks);
-
+    merge_freed_chunks();
+    printf("++++++++++++++freed+++++++++++++\n");
+    printf("++++++++++++++++++++++++++++++++\n");
+    chunk_list_print(&freed_chunks);
    
+    printf("++++++++++++++++++++++++++++++++\n");
+    chunk_list_print(&mem_chunks);
     return 0 ; 
 }
